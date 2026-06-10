@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+supabase
+python-dotenv
+beautifulsoup4
+requests
