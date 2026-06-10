@@ -191,7 +191,15 @@ function App() {
             ) : (
               <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--color-text-muted)', padding: '4rem' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚽</div>
-                <p>No hay encuentros disponibles para esta fecha o filtro.</p>
+                <p>
+                  {selectedDate 
+                    ? `No hay partidos programados para el ${selectedDate}.` 
+                    : filter === 'today' 
+                      ? 'Para hoy no hay juegos previstos. ¡Vuelve mañana!' 
+                      : filter === 'live' 
+                        ? 'No hay partidos en vivo en este momento. ¡Sigue atento!' 
+                        : 'No hay encuentros disponibles en esta categoría.'}
+                </p>
               </div>
             )}
           </div>
