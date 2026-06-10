@@ -77,6 +77,16 @@ function App() {
     <div className="app-wrapper">
       <header className="hero-header">
         <div className="container">
+          <span style={{ 
+            display: 'block', 
+            fontSize: '1.1rem', 
+            fontWeight: '600', 
+            color: 'var(--color-accent)', 
+            textTransform: 'uppercase', 
+            letterSpacing: '3px',
+            marginBottom: '0.5rem',
+            opacity: '0.9'
+          }}>Calendario Oficial</span>
           <h1>Mundial 2026</h1>
           <p>La experiencia definitiva del fútbol mundial</p>
         </div>
