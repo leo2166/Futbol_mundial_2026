@@ -22,6 +22,7 @@ const API_BASE_URL = 'https://futbol-mundial-2026.onrender.com';
 function App() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [filter, setFilter] = useState<'all' | 'today' | 'live' | 'finished'>('all');
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,14 +42,26 @@ function App() {
   };
 
   useEffect(() => {
-    const endpointMap = {
-      all: '/matches',
-      today: '/matches/today',
-      live: '/matches/live',
-      finished: '/matches/finished',
-    };
-    fetchMatches(endpointMap[filter]);
-  }, [filter]);
+    if (selectedDate) {
+      fetchMatches(`/date/${selectedDate}`);
+    } else {
+      const endpointMap = {
+        all: '/matches',
+        today: '/matches/today',
+        live: '/matches/live',
+        finished: '/matches/finished',
+      };
+      fetchMatches(endpointMap[filter]);
+    }
+  }, [filter, selectedDate]);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(e.target.value);
+  };
+
+  const clearDate = () => {
+    setSelectedDate('');
+  };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -70,32 +83,59 @@ function App() {
       </header>
 
       <main className="container">
-        <nav className="filter-nav">
-          <button 
-            className={`nav-item ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            Todos los Encuentros
-          </button>
-          <button 
-            className={`nav-item ${filter === 'today' ? 'active' : ''}`}
-            onClick={() => setFilter('today')}
-          >
-            📅 Partidos de Hoy
-          </button>
-          <button 
-            className={`nav-item ${filter === 'live' ? 'active' : ''}`}
-            onClick={() => setFilter('live')}
-          >
-            🔴 En Vivo Ahora
-          </button>
-          <button 
-            className={`nav-item ${filter === 'finished' ? 'active' : ''}`}
-            onClick={() => setFilter('finished')}
-          >
-            🏆 Resultados Finales
-          </button>
-        </nav>
+        <div className="filter-bar" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginBottom: '3rem' }}>
+          <nav className="filter-nav">
+            <button 
+              className={`nav-item ${filter === 'all' && !selectedDate ? 'active' : ''}`}
+              onClick={() => { setFilter('all'); setSelectedDate(''); }}
+            >
+              Todos los Encuentros
+            </button>
+            <button 
+              className={`nav-item ${filter === 'today' && !selectedDate ? 'active' : ''}`}
+              onClick={() => { setFilter('today'); setSelectedDate(''); }}
+            >
+              📅 Partidos de Hoy
+            </button>
+            <button 
+              className={`nav-item ${filter === 'live' && !selectedDate ? 'active' : ''}`}
+              onClick={() => { setFilter('live'); setSelectedDate(''); }}
+            >
+              🔴 En Vivo Ahora
+            </button>
+            <button 
+              className={`nav-item ${filter === 'finished' && !selectedDate ? 'active' : ''}`}
+              onClick={() => { setFilter('finished'); setSelectedDate(''); }}
+            >
+              🏆 Resultados Finales
+            </button>
+          </nav>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--color-card)', padding: '1rem 2rem', borderRadius: '50px', border: '1px solid var(--glass-border)', backdropFilter: 'blur(10px)' }}>
+            <span style={{ color: 'var(--color-text-muted)', fontWeight: '600' }}>📅 Filtrar por día:</span>
+            <input 
+              type="date" 
+              value={selectedDate} 
+              onChange={handleDateChange}
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                color: 'white', 
+                fontFamily: 'inherit', 
+                cursor: 'pointer',
+                outline: 'none' 
+              }} 
+            />
+            {selectedDate && (
+              <button 
+                onClick={clearDate}
+                style={{ background: 'none', border: 'none', color: 'var(--color-accent)', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
+        </div>
 
         {loading && (
           <div style={{ textAlign: 'center', fontSize: '1.5rem', marginTop: '3rem', color: 'var(--color-accent)' }}>
@@ -114,10 +154,10 @@ function App() {
             {matches.length > 0 ? (
               matches.map((match) => (
                 <div key={match.id} className="match-card">
-                  <div className="match-meta">
+                  <div className="match-header">
                     <span>{formatDate(match.match_date)}</span>
                     {match.status === 'LIVE' && (
-                      <span className="live-badge">EN VIVO</span>
+                      <span className="live-indicator">● EN VIVO</span>
                     )}
                   </div>
                   
@@ -151,7 +191,7 @@ function App() {
             ) : (
               <div style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--color-text-muted)', padding: '4rem' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚽</div>
-                <p>No hay encuentros disponibles en esta categoría.</p>
+                <p>No hay encuentros disponibles para esta fecha o filtro.</p>
               </div>
             )}
           </div>
