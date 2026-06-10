@@ -32,15 +32,35 @@ app.add_middleware(
 async def root():
     return {"message": "Bienvenido a la API del Mundial 2026", "status": "online"}
 
+@app.get("/health")
+async def health_check():
+    """Endpoint para verificar la salud de la API y la conexión a Supabase."""
+    try:
+        # Intenta una consulta simple a cualquier tabla
+        res = supabase.table("groups").select("count").limit(1).execute()
+        return {
+            "status": "healthy", 
+            "database": "connected", 
+            "message": "La conexión con Supabase es correcta"
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy", 
+            "database": "disconnected", 
+            "error": str(e)
+        }
+
 @app.get("/matches")
 async def get_matches():
     """Retorna la lista completa de partidos con nombres de equipos."""
     try:
-        # Hacemos un join con la tabla teams para obtener los nombres
+        # Intentamos la consulta con join
         res = supabase.table("matches").select("*, home_team:home_team_id(name), away_team:away_team_id(name)").execute()
         return res.data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"ERROR CRÍTICO en /matches: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+
 
 @app.get("/matches/today")
 async def get_matches_today():
