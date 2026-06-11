@@ -67,7 +67,8 @@ async def get_matches_today():
     """Retorna los partidos programados para el día de hoy."""
     try:
         today = date.today().isoformat()
-        res = supabase.table("matches").select("*, home_team:home_team_id(name), away_team:away_team_id(name)").ilike("match_date", f"%{today}%").execute()
+        # Filtramos desde el inicio del día hasta el final del día para evitar el error de tipo TIMESTAMPTZ
+        res = supabase.table("matches").select("*, home_team:home_team_id(name), away_team:away_team_id(name)").gte("match_date", f"{today}T00:00:00Z").lte("match_date", f"{today}T23:59:59Z").execute()
         return res.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -125,8 +126,8 @@ async def get_matches_by_date(date_str: str):
     Formato esperado: yyyy-mm-dd
     """
     try:
-        # Forzamos la búsqueda para que coincida con el inicio de la fecha en el timestamp
-        res = supabase.table("matches").select("*, home_team:home_team_id(name), away_team:away_team_id(name)").ilike("match_date", f"{date_str}%").execute()
+        # Filtramos desde el inicio del día hasta el final del día para evitar el error de tipo TIMESTAMPTZ
+        res = supabase.table("matches").select("*, home_team:home_team_id(name), away_team:away_team_id(name)").gte("match_date", f"{date_str}T00:00:00Z").lte("match_date", f"{date_str}T23:59:59Z").execute()
         return res.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
