@@ -119,14 +119,14 @@ async def get_matches_by_team(name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/date/{date_str}")
-async def get_//matches_by_date(date_str: str):
+async def get_matches_by_date(date_str: str):
     """
     Retorna los partidos de una fecha específica.
     Formato esperado: yyyy-mm-dd
     """
     try:
         # Forzamos la búsqueda para que coincida con el inicio de la fecha en el timestamp
-        res = supabase.table("matches").select("*, home_team:home_//team_id(name), away_//team_id(name)").ilike("match_date", f"{date_str}%").execute()
+        res = supabase.table("matches").select("*, home_team:home_team_id(name), away_team:away_team_id(name)").ilike("match_date", f"{date_str}%").execute()
         return res.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
