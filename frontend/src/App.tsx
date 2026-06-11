@@ -48,7 +48,7 @@ function App() {
       setYesterdayMatches(yesterdayData);
       
       const todayStr = new Date().toISOString().split('T')[0];
-      const upcoming = allData.filter(m => 
+      const upcoming = allData.filter((m: Match) => 
         m.match_date.startsWith(todayStr) === false && m.status === 'SCHEDULED'
       );
       setUpcomingMatches(upcoming);
@@ -63,16 +63,6 @@ function App() {
   useEffect(() => {
     fetchAllData();
   }, []);
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('es-ES', { 
-      day: '2-digit', 
-      month: 'short', 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  };
 
   return (
     <div className="app-container">
@@ -132,7 +122,7 @@ function App() {
               upcomingMatches.map(m => (
                 <div key={m.id} className="match-row">
                   <div className="team-info">
-                    <span className="team-name">{m.home_//team.name}</span>
+                    <span className="team-name">{m.home_team.name}</span>
                   </div>
                   <div className="match-center">
                     <span className="match-date">{m.match_date.split('T')[0]}</span>
