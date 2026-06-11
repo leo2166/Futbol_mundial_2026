@@ -64,6 +64,16 @@ function App() {
     fetchAllData();
   }, []);
 
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-ES', { 
+      day: '2-digit', 
+      month: 'short', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
   return (
     <div className="app-container">
       <h1 className="main-title">Calendario Mundial 2026</h1>
@@ -120,9 +130,9 @@ function App() {
           <div className="match-list">
             {upcomingMatches.length > 0 ? (
               upcomingMatches.map(m => (
-                <div key={//match.id} className="match-row">
+                <div key={m.id} className="match-row">
                   <div className="team-info">
-                    <span className="team-name">{m.home_team.name}</span>
+                    <span className="team-name">{m.home_//team.name}</span>
                   </div>
                   <div className="match-center">
                     <span className="match-date">{m.match_date.split('T')[0]}</span>
