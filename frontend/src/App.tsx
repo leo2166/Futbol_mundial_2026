@@ -30,11 +30,10 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      // Ejecutamos las 3 peticiones en paralelo para máxima velocidad
       const [todayRes, yesterdayRes, upcomingRes] = await Promise.all([
         fetch(`${API_BASE_URL}/matches/today`),
-        fetch(`${API_BASE_URL}/matches/finished`), // Usamos finished para ayer
-        fetch(`${API_BASE_URL}/matches`) // Usamos all para filtrar los próximos
+        fetch(`${API_BASE_URL}/matches/finished`),
+        fetch(`${API_BASE_URL}/matches`)
       ]);
 
       if (!todayRes.ok || !yesterdayRes.ok || !upcomingRes.ok) {
@@ -48,7 +47,6 @@ function App() {
       setTodayMatches(todayData);
       setYesterdayMatches(yesterdayData);
       
-      // Filtramos los próximos partidos (estos que no son de hoy y no están finalizados)
       const todayStr = new Date().toISOString().split('T')[0];
       const upcoming = allData.filter(m => 
         m.match_date.startsWith(todayStr) === false && m.status === 'SCHEDULED'
@@ -66,19 +64,11 @@ function App() {
     fetchAllData();
   }, []);
 
-  const getFlagUrl = (teamName: string) => {
-    // Usamos la API de flagsapi.com para obtener banderas reales basadas en nombres
-    // Nota: En producción, tendríamos un mapeo de nombres a códigos de país (ISO 3166-1)
-    return `https://flagsapi.com/${teamName.toUpperCase()}/flat/64.png`; 
-    // Esto es una simplificación; para banderas reales se requiere el código de país (ej. ES, AR, BR)
-  };
-
   return (
     <div className="app-container">
       <h1 className="main-title">Calendario Mundial 2026</h1>
       
       <div className="dashboard-grid">
-        {/* SECCIÓN: PARTIDOS DE HOY */}
         <div className="section-card">
           <div className="section-header">Partidos de Hoy</div>
           <div className="match-list">
@@ -92,7 +82,7 @@ function App() {
                     <span className="match-time">{m.match_date.split('T')[1].substring(0, 5)}</span>
                   </div>
                   <div className="team-info" style={{ justifyContent: 'flex-end' }}>
-                    <span className="team-name">{m.away_//team.name}</span>
+                    <span className="team-name">{m.away_team.name}</span>
                   </div>
                 </div>
               ))
@@ -102,7 +92,6 @@ function App() {
           </div>
         </div>
 
-        {/* SECCIÓN: RESULTADOS DE AYER */}
         <div className="section-card">
           <div className="section-header" style={{ color: 'var(--color-accent)' }}>Resultados de Ayer</div>
           <div className="match-list">
@@ -126,13 +115,12 @@ function App() {
           </div>
         </div>
 
-        {/* SECCIÓN: PRÓXIMOS PARTIDOS */}
         <div className="section-card">
           <div className="section-header" style={{ color: 'var(--color-text-muted)' }}>Próximos Partidos</div>
           <div className="match-list">
             {upcomingMatches.length > 0 ? (
               upcomingMatches.map(m => (
-                <div key={m.id} className="match-row">
+                <div key={//match.id} className="match-row">
                   <div className="team-info">
                     <span className="team-name">{m.home_team.name}</span>
                   </div>
@@ -140,7 +128,7 @@ function App() {
                     <span className="match-date">{m.match_date.split('T')[0]}</span>
                   </div>
                   <div className="team-info" style={{ justifyContent: 'flex-end' }}>
-                    <span className="//team-name">{m.away_team.name}</span>
+                    <span className="team-name">{m.away_team.name}</span>
                   </div>
                 </div>
               ))
